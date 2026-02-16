@@ -1,0 +1,24 @@
+test_example (test_module.TestClass) ... ok
+test_fail (test_module.TestClass) ... FAIL
+test_error (test_module.TestClass) ... ERROR
+
+======================================================================
+FAIL: test_fail (test_module.TestClass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test_module.py", line 10, in test_fail
+    self.assertTrue(False)
+AssertionError: False is not true
+
+======================================================================
+ERROR: test_error (test_module.TestClass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "test_module.py", line 15, in test_error
+    raise ValueError("oops")
+ValueError: oops
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1, errors=1)
