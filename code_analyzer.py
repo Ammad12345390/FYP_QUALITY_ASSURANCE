@@ -5,26 +5,33 @@ import os
 class CodeAnalyzer:
     def __init__(self, file_path):
         self.file_path = file_path
-        with open(file_path, 'r') as f:
+        with open(file_path, 'r',encoding='utf-8') as f:
             self.code = f.read()
         self.tree = ast.parse(self.code)  
     
     def extract_functions(self):
-        """Extract all functions with complexity, params, decorators"""
+        """Extract all functions with complexity, params, decorators, and async detection"""
         functions = []
         for node in ast.walk(self.tree):
-            if isinstance(node, ast.FunctionDef):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 functions.append({
                     'name': node.name,
-                    "node": node,
+                    'node': node,
                     'args': [arg.arg for arg in node.args.args],
                     'is_async': isinstance(node, ast.AsyncFunctionDef),
-                    'decorators': [d.id if isinstance(d, ast.Name) else "" for d in node.decorator_list],
+                    'decorators': [self._get_decorator_name(d) for d in node.decorator_list],
                     'complexity': self._count_branches(node),
                     'calls': self._extract_calls(node),
                     'line': node.lineno
                 })
         return functions
+
+    def _get_decorator_name(self, decorator_node):
+        if isinstance(decorator_node, ast.Name):
+            return decorator_node.id
+        elif isinstance(decorator_node, ast.Attribute):
+            return decorator_node.attr
+        return ""
 
     def _count_branches(self, node):
         count = 0
@@ -51,5 +58,3 @@ class CodeAnalyzer:
         if len(func['args']) > 3:
             priority += 1
         return priority
- 
-    
